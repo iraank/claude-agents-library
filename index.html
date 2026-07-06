@@ -25,6 +25,13 @@ body{
   min-height:100vh;padding:48px 24px 80px;
 }
 .wrap{max-width:1180px;margin:0 auto}
+/* language switch — top right */
+.langswitch{position:fixed;top:20px;right:20px;z-index:40;display:flex;gap:2px;
+  background:rgba(12,26,19,.85);border:1px solid var(--line);border-radius:999px;padding:3px;backdrop-filter:blur(8px)}
+.langswitch button{font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.04em;
+  padding:6px 14px;border-radius:999px;border:none;cursor:pointer;background:transparent;color:var(--sage);transition:all .16s}
+.langswitch button.on{background:var(--emerald);color:var(--gold-bright)}
+.langswitch button:not(.on):hover{color:var(--cream)}
 header{text-align:center;margin-bottom:40px}
 .eyebrow{font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--sage);margin-bottom:14px}
 h1{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-.01em}
@@ -70,6 +77,7 @@ footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;lett
 .close{position:absolute;top:20px;right:22px;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
   background:rgba(27,94,67,.2);color:var(--cream-dim);font-size:20px;cursor:pointer;transition:all .16s;line-height:1}
 .close:hover{border-color:var(--gold-soft);color:var(--gold-bright)}
+.mnote{font-size:12px;color:var(--sage);margin-bottom:16px;font-style:italic}
 .md{color:var(--cream-dim);font-size:15px;line-height:1.7;border-top:1px solid var(--line-soft);padding-top:22px}
 .md h1,.md h2,.md h3{font-family:'Playfair Display',serif;color:var(--cream);margin:22px 0 10px}
 .md h1{font-size:24px}.md h2{font-size:20px}.md h3{font-size:17px}
@@ -82,11 +90,16 @@ footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;lett
 .md a{color:var(--gold-bright)}.md hr{border:none;border-top:1px solid var(--line-soft);margin:20px 0}
 ::selection{background:var(--gold-soft);color:var(--cream)}
 </style></head>
-<body><div class="wrap">
+<body>
+<div class="langswitch">
+  <button id="btn-en" onclick="setLang('en')">EN</button>
+  <button id="btn-ua" onclick="setLang('ua')">UA</button>
+</div>
+<div class="wrap">
 <header>
   <div class="eyebrow">Claude Code · ~/.claude/agents</div>
-  <h1>Бібліотека <span class="accent">агентів</span></h1>
-  <p class="sub"><b id="total">…</b> агентів · <b id="ncat">…</b> категорій · оновлено <span id="date">…</span></p>
+  <h1><span id="h1a">Бібліотека</span> <span class="accent" id="h1b">агентів</span></h1>
+  <p class="sub"><b id="total">…</b> <span id="lbl-agents">агентів</span> · <b id="ncat">…</b> <span id="lbl-cats">категорій</span> · <span id="lbl-upd">оновлено</span> <span id="date">…</span></p>
 </header>
 <div class="controls">
   <div class="search">
@@ -99,7 +112,7 @@ footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;lett
 <div class="loading" id="loading">Завантаження агентів…</div>
 <div class="grid" id="grid"></div>
 <div class="empty" id="empty" style="display:none">Нічого не знайдено — спробуй інший запит.</div>
-<footer>232 агенти працюють нативно в Claude Code · виклик за іменем у чаті або через Agent tool</footer>
+<footer id="footer">232 агенти працюють нативно в Claude Code · виклик за іменем у чаті або через Agent tool</footer>
 </div>
 
 <div class="overlay" id="overlay">
@@ -107,49 +120,91 @@ footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;lett
     <button class="close" id="close" aria-label="Закрити">✕</button>
     <div class="mhead"><span class="mem" id="mem"></span><h2 id="mname"></h2></div>
     <div class="mcat" id="mcat"></div>
+    <div class="mnote" id="mnote"></div>
     <div class="md" id="mbody"></div>
   </div>
 </div>
 
 <script>
-let DATA=[],CATS=[],active="all",query="";
+const I18N={
+  en:{h1a:"Agent",h1b:"Library",agents:"agents",cats:"categories",upd:"updated",
+      all:"All",search:"Search agent — name or description…",
+      count:(x,y)=>"Showing: "+x+" of "+y,empty:"Nothing found — try another query.",
+      loading:"Loading agents…",
+      footer:"232 agents run natively in Claude Code · call by name in chat or via Agent tool",
+      note:"Full prompt (original, English):"},
+  ua:{h1a:"Бібліотека",h1b:"агентів",agents:"агентів",cats:"категорій",upd:"оновлено",
+      all:"Всі",search:"Пошук агента — назва або опис…",
+      count:(x,y)=>"Показано: "+x+" з "+y,empty:"Нічого не знайдено — спробуй інший запит.",
+      loading:"Завантаження агентів…",
+      footer:"232 агенти працюють нативно в Claude Code · виклик за іменем у чаті або через Agent tool",
+      note:"Повний промпт (оригінал, англійською):"}
+};
+let DATA=[],CATS=[],CATUA={},active="all",query="",lang="en";
 const $=id=>document.getElementById(id);
 const grid=$("grid"),empty=$("empty"),count=$("count"),chips=$("chips"),overlay=$("overlay");
-function mkChip(label,emoji,val,c){
-  const b=document.createElement("button");b.className="chip"+(val==="all"?" active":"");b.dataset.val=val;
-  b.innerHTML=(emoji?emoji+" ":"")+label+(c!=null?'<span class="n">'+c+'</span>':'');
-  b.onclick=()=>{active=val;[...chips.children].forEach(x=>x.classList.toggle("active",x.dataset.val===val));render()};
+
+function catLabel(c){return lang==="ua"?(CATUA[c]||c):c;}
+function desc(a){return lang==="ua"?(a.du||a.d):a.d;}
+
+function setLang(l){
+  lang=l; try{localStorage.setItem("agentsLang",l);}catch(e){}
+  const t=I18N[l];
+  document.documentElement.lang = l==="ua"?"uk":"en";
+  $("btn-en").classList.toggle("on",l==="en");
+  $("btn-ua").classList.toggle("on",l==="ua");
+  $("h1a").textContent=t.h1a; $("h1b").textContent=t.h1b;
+  $("lbl-agents").textContent=t.agents; $("lbl-cats").textContent=t.cats; $("lbl-upd").textContent=t.upd;
+  $("q").placeholder=t.search; $("loading").textContent=t.loading; $("empty").textContent=t.empty;
+  $("footer").textContent=t.footer;
+  [...chips.children].forEach(b=>{
+    const v=b.dataset.val, c=b.dataset.cnt;
+    const lbl=v==="all"?t.all:catLabel(v);
+    const em=b.dataset.em?b.dataset.em+" ":"";
+    b.innerHTML=em+lbl+'<span class="n">'+c+'</span>';
+  });
+  render();
+}
+function mkChip(label,emoji,val,cnt){
+  const b=document.createElement("button");b.className="chip"+(val==="all"?" active":"");
+  b.dataset.val=val;b.dataset.cnt=cnt;b.dataset.em=emoji||"";
+  b.innerHTML=(emoji?emoji+" ":"")+label+'<span class="n">'+cnt+'</span>';
+  b.onclick=()=>{active=val;[...chips.children].forEach(x=>x.classList.toggle("active",x.dataset.val===val));render();};
   return b;
 }
 function openModal(x){
-  $("mem").textContent=x.e;$("mname").textContent=x.n;$("mcat").textContent=x.ce+" "+x.c;
+  $("mem").textContent=x.e;$("mname").textContent=x.n;$("mcat").textContent=x.ce+" "+catLabel(x.c);
+  $("mnote").textContent=I18N[lang].note;
   $("mbody").innerHTML=window.marked?marked.parse(x.body||""):("<pre>"+(x.body||"").replace(/</g,"&lt;")+"</pre>");
   overlay.classList.add("open");document.body.style.overflow="hidden";
 }
-function closeModal(){overlay.classList.remove("open");document.body.style.overflow=""}
+function closeModal(){overlay.classList.remove("open");document.body.style.overflow="";}
 $("close").onclick=closeModal;
-overlay.onclick=e=>{if(e.target===overlay)closeModal()};
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+overlay.onclick=e=>{if(e.target===overlay)closeModal();};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
 function render(){
   const q=query.trim().toLowerCase();
-  const rows=DATA.filter(x=>(active==="all"||x.c===active)&&(!q||x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q)));
+  const rows=DATA.filter(x=>(active==="all"||x.c===active)&&
+    (!q||x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q)||(x.du||"").toLowerCase().includes(q)));
   grid.innerHTML="";
   const frag=document.createDocumentFragment();
   rows.forEach(x=>{
     const d=document.createElement("div");d.className="card";
-    d.innerHTML='<div class="top"><span class="em">'+x.e+'</span><div><div class="nm">'+x.n+'</div><div class="cat">'+x.ce+" "+x.c+'</div></div></div><div class="ds">'+(x.d||"")+'</div>';
+    d.innerHTML='<div class="top"><span class="em">'+x.e+'</span><div><div class="nm">'+x.n+'</div><div class="cat">'+x.ce+" "+catLabel(x.c)+'</div></div></div><div class="ds">'+desc(x)+'</div>';
     d.onclick=()=>openModal(x);frag.appendChild(d);
   });
   grid.appendChild(frag);
   empty.style.display=rows.length?"none":"block";
-  count.textContent="Показано: "+rows.length+" з "+DATA.length;
+  count.textContent=I18N[lang].count(rows.length,DATA.length);
 }
-$("q").addEventListener("input",e=>{query=e.target.value;render()});
+$("q").addEventListener("input",e=>{query=e.target.value;render();});
 fetch("agents-data.json").then(r=>r.json()).then(j=>{
-  DATA=j.agents;CATS=j.cats;
+  DATA=j.agents;CATS=j.cats;CATUA=j.cat_ua||{};
   $("total").textContent=DATA.length;$("ncat").textContent=CATS.length;$("date").textContent=j.date;
-  chips.appendChild(mkChip("Всі","🗂️","all",DATA.length));
+  chips.appendChild(mkChip(I18N.en.all,"🗂️","all",DATA.length));
   CATS.forEach(c=>chips.appendChild(mkChip(c.name,c.emoji,c.name,c.count)));
-  $("loading").style.display="none";render();
-}).catch(e=>{$("loading").textContent="Помилка завантаження даних."});
+  $("loading").style.display="none";
+  let saved="en"; try{saved=localStorage.getItem("agentsLang")||"en";}catch(e){}
+  setLang(saved);
+}).catch(e=>{$("loading").textContent="Помилка завантаження даних.";});
 </script></body></html>
