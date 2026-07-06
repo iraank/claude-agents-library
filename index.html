@@ -140,11 +140,11 @@ const I18N={
       footer:"232 агенти працюють нативно в Claude Code · виклик за іменем у чаті або через Agent tool",
       note:"Повний промпт (оригінал, англійською):"}
 };
-let DATA=[],CATS=[],CATUA={},active="all",query="",lang="en";
+let DATA=[],CATS=[],CATUA={},CATEN={},active="all",query="",lang="en";
 const $=id=>document.getElementById(id);
 const grid=$("grid"),empty=$("empty"),count=$("count"),chips=$("chips"),overlay=$("overlay");
 
-function catLabel(c){return lang==="ua"?(CATUA[c]||c):c;}
+function catLabel(c){return lang==="ua"?(CATUA[c]||c):(CATEN[c]||c);}
 function desc(a){return lang==="ua"?(a.du||a.d):a.d;}
 
 function setLang(l){
@@ -199,7 +199,7 @@ function render(){
 }
 $("q").addEventListener("input",e=>{query=e.target.value;render();});
 fetch("agents-data.json").then(r=>r.json()).then(j=>{
-  DATA=j.agents;CATS=j.cats;CATUA=j.cat_ua||{};
+  DATA=j.agents;CATS=j.cats;CATUA=j.cat_ua||{};CATEN=j.cat_en||{};
   $("total").textContent=DATA.length;$("ncat").textContent=CATS.length;$("date").textContent=j.date;
   chips.appendChild(mkChip(I18N.en.all,"🗂️","all",DATA.length));
   CATS.forEach(c=>chips.appendChild(mkChip(c.name,c.emoji,c.name,c.count)));
