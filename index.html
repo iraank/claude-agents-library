@@ -39,6 +39,7 @@ h1 .accent{color:var(--gold-bright);font-style:italic}
 .card .em{font-size:28px;line-height:1}
 .card .nm{font-family:'Playfair Display',Georgia,serif;font-size:19px;font-weight:700;color:var(--cream);line-height:1.2}
 .card .kind{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);opacity:.85}
+.card .author{font-size:12px;color:var(--sage);margin-top:2px}
 .card .ds{font-size:13.5px;color:var(--cream-dim);line-height:1.55}
 footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;letter-spacing:.05em}
 /* modal */
@@ -50,7 +51,8 @@ footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;lett
 .modal .mhead{display:flex;align-items:center;gap:16px;margin-bottom:4px}
 .modal .mem{font-size:38px;line-height:1}
 .modal h2{font-family:'Playfair Display',serif;font-size:30px;color:var(--cream);font-weight:700}
-.modal .mkind{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:26px}
+.modal .mkind{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.modal .mauthor{font-size:13px;color:var(--sage);margin-bottom:26px}
 .close{position:absolute;top:22px;right:24px;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
   background:rgba(27,94,67,.2);color:var(--cream-dim);font-size:20px;cursor:pointer;transition:all .16s;line-height:1}
 .close:hover{border-color:var(--gold-soft);color:var(--gold-bright)}
@@ -80,6 +82,7 @@ footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;lett
     <button class="close" id="close" aria-label="Закрити">✕</button>
     <div class="mhead"><span class="mem" id="mem"></span><h2 id="mname"></h2></div>
     <div class="mkind" id="mkind"></div>
+    <div class="mauthor" id="mauthor"></div>
     <div id="mbody"></div>
   </div>
 </div>
@@ -87,7 +90,7 @@ footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;lett
 <script>
 const DATA = [
 {
-  e:"🔑", n:"Ira Instagram", kind:"Особистий агент",
+  e:"🔑", n:"Ira Instagram", kind:"Особистий агент", author:"Ira Ank",
   short:"Персональний Instagram-стратег і копірайтер Іри — знає бренд напам'ять, пише виключно українською.",
   identity:"Особистий Instagram-стратег і копірайтер Іри — коуча розблокування (unlocking). НЕ універсальний маркетолог: знає бренд напам'ять (ніша, формула, аудиторія ~712 підписників, тон Снєгур/Ісаєв, єдиний CTA «давайте знайомитись») і пише виключно українською.",
   mission:"Перетворювати коучингову суть на готовий до публікації контент, що знайомить, а не продає. Кожна відповідь — фінальний матеріал, а не теорія чи план «що можна було б зробити».",
@@ -114,7 +117,7 @@ const DATA = [
   metrics:"Явних кількісних KPI агент не задає — успіх вимірюється якісно: жоден із 5 заборон не порушено, витримано один із 4 контент-стовпів, є єдиний CTA, матеріал повністю готовий до публікації без доопрацювання."
 },
 {
-  e:"🎤", n:"speech-review", kind:"Скіл",
+  e:"🎤", n:"speech-review", kind:"Скіл", author:"Дмитро Тетервак",
   short:"Стратегічний розбір виступу через 5 світових фреймворків → багатошаровий HTML + PDF.",
   identity:"Стратегічний розбірник публічних виступів, ефірів, лекцій і презентацій. Перетворює розшифровку на багатошаровий розбір — кожен із 5 фреймворків отримує окрему вкладку зі своєю візуалізацією й діагнозом.",
   mission:"Дати чесний системний діагноз виступу через перехресну перевірку 3 джерел (інтуїція замовника, реальні відгуки аудиторії, аналіз через фреймворки) і видати не абстрактну критику, а конкретний артефакт для перебудови виступу.",
@@ -142,7 +145,7 @@ const DATA = [
   metrics:"Вбудований чекліст «частих помилок»: усі 5 фреймворків застосовано (не тільки Бен Хант); цитати дослівні, не переказані; є конструктор-артефакт, а не абстрактна концепція; критика не згладжена; крос-верифікація пройдена, а не пропущена."
 },
 {
-  e:"🔥", n:"grill-me", kind:"Скіл",
+  e:"🔥", n:"grill-me", kind:"Скіл", author:"Дмитро Тетервак",
   short:"Безжальне інтерв'ю по плану до спільного розуміння, гілка за гілкою.",
   identity:"Безжальний інтерв'юер плану чи дизайну. Веде розмову вниз по кожній гілці дерева рішень, розв'язуючи залежності між рішеннями одну за одною.",
   mission:"Дійти до спільного розуміння плану — не залишити жодного нез'ясованого рішення чи прихованого припущення.",
@@ -166,7 +169,7 @@ const DATA = [
   metrics:"3 фальсифікаційні тести з конкретним числовим або сигнальним порогом провалу — це вбудований метод виміряти, чи витримає план реальність за 14 днів."
 },
 {
-  e:"🚀", n:"yc-startup-critic", kind:"Скіл",
+  e:"🚀", n:"yc-startup-critic", kind:"Скіл", author:"Дмитро Тетервак",
   short:"Розбір стартап-ідей у стилі Y Combinator / Пола Грема.",
   identity:"Аналітик стартап-ідей у стилі Y Combinator / Пола Грема. Перетворює сиру ідею на гостру, execution-орієнтовану аналітику.",
   mission:"Дати жорсткий, але корисний вердикт: чи реальна проблема, чи є founder-market fit, хто справжні конкуренти — і що робити в найближчі 48 годин.",
@@ -192,7 +195,7 @@ const DATA = [
   metrics:"Явний вердикт stop / pivot / test now / build; 3 фальсифікаційні тести з порогом провалу; обов'язковий блок «наступні 48 годин» — план без дій до звіту не вважається завершеним."
 },
 {
-  e:"📝", n:"tdlife-konspekt", kind:"Скіл",
+  e:"📝", n:"tdlife-konspekt", kind:"Скіл", author:"Дмитро Тетервак",
   short:"Двомовний (UA+RU) інтерактивний HTML-конспект із будь-якого транскрипту.",
   identity:"Генератор двомовних (українська + російська) інтерактивних HTML-конспектів у фірмовому стилі TDLife. Спрацьовує на будь-який блок тексту, що схожий на розшифровку — навіть без явного прохання.",
   mission:"З сирого транскрипту уроку, вебінару чи ефіру миттєво зробити самодостатній конспект, яким одразу можна користуватись — не переказ, а структурований інструмент.",
@@ -218,7 +221,7 @@ const DATA = [
   metrics:"Кількісні орієнтири задані прямо в скілі: 5–8 тематичних секцій, 8–12 пунктів чек-листа у 2–3 групах, 4–8 питань Q&A, 5–7 тегів, час читання = кількість слів ÷ 200."
 },
 {
-  e:"✍️", n:"humanizer-ua", kind:"Скіл",
+  e:"✍️", n:"humanizer-ua", kind:"Скіл", author:"Наталя Стасюк",
   short:"Прибирає ознаки AI-генерації, канцеляризми й суржик з українського тексту.",
   identity:"Редактор, що перетворює мертвий текст на живий. 21 патерн, згрупований у канцеляризми, росіянізми/суржик, AI-словник і стиль форматування.",
   mission:"Прибрати канцеляризми, воду, суржик і ознаки AI-генерації, зберігши смисл і додавши голос — так, щоб за текстом було видно живу людину.",
@@ -243,7 +246,7 @@ const DATA = [
   metrics:"6-пунктова перевірка перед видачею: звучить природно вголос; є різноманітність структури речень; є конкретика замість абстракцій; смисл збережено; є голос; немає росіянізмів чи суржику."
 },
 {
-  e:"🔍", n:"master-audit", kind:"Скіл",
+  e:"🔍", n:"master-audit", kind:"Скіл", author:"Ira Ank",
   short:"Пост-виконавчий аудит завершеної задачі на 3 рівнях.",
   identity:"Пост-виконавчий аудитор — перевіряє вже завершену роботу на трьох рівнях: локальна коректність, коректність залежностей, системна коректність.",
   mission:"Не підтвердити, що робота виглядає добре, а знайти, де вона могла зламатися поза межами файлів, які редагувалися.",
@@ -283,6 +286,7 @@ function openModal(x){
   document.getElementById("mem").textContent=x.e;
   document.getElementById("mname").textContent=x.n;
   document.getElementById("mkind").textContent=x.kind;
+  document.getElementById("mauthor").textContent="Автор: "+x.author;
   const body=document.getElementById("mbody");
   body.innerHTML="";
   SECTIONS.forEach(([key,label,hint],i)=>{
@@ -308,7 +312,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
 DATA.forEach(x=>{
   const c=document.createElement("div");
   c.className="card";
-  c.innerHTML=`<div class="top"><span class="em">${x.e}</span><div><div class="nm">${x.n}</div><div class="kind">${x.kind}</div></div></div><div class="ds">${x.short}</div>`;
+  c.innerHTML=`<div class="top"><span class="em">${x.e}</span><div><div class="nm">${x.n}</div><div class="kind">${x.kind}</div><div class="author">${x.author}</div></div></div><div class="ds">${x.short}</div>`;
   c.onclick=()=>openModal(x);
   grid.appendChild(c);
 });
