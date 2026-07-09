@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="uk"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Бібліотека агентів — Ira</title>
-<meta name="description" content="Бібліотека з 232 AI-агентів для Claude Code — пошук, фільтри, повні промпти.">
+<title>Бібліотека Іри — агенти та скіли</title>
+<meta name="description" content="Особиста бібліотека Claude Code — 1 агент і 6 скілів, кожен розкладений на Identity, Mission, Rules, Deliverables, Workflow, Metrics.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300..800&family=Playfair+Display:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 :root{
   --bg:#0A140F;--bg-2:#0C1A13;--emerald-deep:#0F3D2E;--emerald:#1B5E43;--emerald-bright:#2E8B6B;
@@ -24,187 +23,293 @@ body{
     var(--bg);
   min-height:100vh;padding:48px 24px 80px;
 }
-.wrap{max-width:1180px;margin:0 auto}
-/* language switch — top right */
-.langswitch{position:fixed;top:20px;right:20px;z-index:40;display:flex;gap:2px;
-  background:rgba(12,26,19,.85);border:1px solid var(--line);border-radius:999px;padding:3px;backdrop-filter:blur(8px)}
-.langswitch button{font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.04em;
-  padding:6px 14px;border-radius:999px;border:none;cursor:pointer;background:transparent;color:var(--sage);transition:all .16s}
-.langswitch button.on{background:var(--emerald);color:var(--gold-bright)}
-.langswitch button:not(.on):hover{color:var(--cream)}
-header{text-align:center;margin-bottom:40px}
+.wrap{max-width:1100px;margin:0 auto}
+header{text-align:center;margin-bottom:44px}
 .eyebrow{font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--sage);margin-bottom:14px}
-h1{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-.01em}
+h1{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:clamp(32px,5.5vw,54px);line-height:1.08;letter-spacing:-.01em}
 h1 .accent{color:var(--gold-bright);font-style:italic}
 .sub{margin-top:16px;color:var(--cream-dim);font-size:16px}
 .sub b{color:var(--gold-bright);font-weight:700}
-.controls{margin:36px 0 8px;display:flex;flex-direction:column;gap:18px;align-items:center}
-.search{width:100%;max-width:520px;position:relative}
-.search input{width:100%;padding:15px 18px 15px 46px;border-radius:14px;background:rgba(12,26,19,.72);
-  border:1px solid var(--line);color:var(--cream);font-family:inherit;font-size:16px;outline:none;transition:border-color .2s,box-shadow .2s}
-.search input::placeholder{color:var(--sage)}
-.search input:focus{border-color:var(--gold-soft);box-shadow:0 0 0 3px rgba(212,175,106,.10)}
-.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;stroke:var(--sage);fill:none;stroke-width:2}
-.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:940px}
-.chip{font-family:inherit;font-size:13.5px;padding:7px 14px;border-radius:999px;cursor:pointer;
-  background:rgba(27,94,67,.14);border:1px solid var(--line);color:var(--cream-dim);transition:all .18s;white-space:nowrap}
-.chip:hover{border-color:var(--gold-soft);color:var(--cream)}
-.chip.active{background:var(--emerald);border-color:var(--gold);color:var(--gold-bright)}
-.chip .n{opacity:.6;margin-left:5px;font-variant-numeric:tabular-nums}
-.count{text-align:center;color:var(--sage);font-size:13px;margin:20px 0 24px;letter-spacing:.04em}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:8px}
 .card{background:linear-gradient(160deg,rgba(15,61,46,.35),rgba(12,26,19,.55));border:1px solid var(--line);
-  border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;cursor:pointer;
+  border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:10px;cursor:pointer;
   transition:transform .16s,border-color .16s,box-shadow .16s}
 .card:hover{transform:translateY(-3px);border-color:var(--gold-soft);box-shadow:0 12px 30px rgba(0,0,0,.35)}
-.card .top{display:flex;align-items:center;gap:11px}
-.card .em{font-size:24px;line-height:1}
-.card .nm{font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;color:var(--cream);line-height:1.2}
-.card .cat{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);opacity:.85}
-.card .ds{font-size:13.5px;color:var(--cream-dim);line-height:1.5;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.empty,.loading{text-align:center;color:var(--sage);padding:60px 0;font-size:16px}
+.card .top{display:flex;align-items:center;gap:12px}
+.card .em{font-size:28px;line-height:1}
+.card .nm{font-family:'Playfair Display',Georgia,serif;font-size:19px;font-weight:700;color:var(--cream);line-height:1.2}
+.card .kind{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);opacity:.85}
+.card .ds{font-size:13.5px;color:var(--cream-dim);line-height:1.55}
 footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;letter-spacing:.05em}
 /* modal */
-.overlay{position:fixed;inset:0;background:rgba(5,10,8,.72);backdrop-filter:blur(6px);
+.overlay{position:fixed;inset:0;background:rgba(5,10,8,.75);backdrop-filter:blur(6px);
   display:none;align-items:flex-start;justify-content:center;padding:40px 20px;z-index:50;overflow-y:auto}
 .overlay.open{display:flex}
 .modal{background:linear-gradient(165deg,#0d1f17,#0a140f);border:1px solid var(--line);border-radius:20px;
-  max-width:820px;width:100%;padding:34px 38px 40px;box-shadow:0 30px 80px rgba(0,0,0,.6);position:relative}
-.modal .mhead{display:flex;align-items:center;gap:14px;margin-bottom:6px}
-.modal .mem{font-size:34px;line-height:1}
+  max-width:760px;width:100%;padding:36px 40px 44px;box-shadow:0 30px 80px rgba(0,0,0,.6);position:relative}
+.modal .mhead{display:flex;align-items:center;gap:16px;margin-bottom:4px}
+.modal .mem{font-size:38px;line-height:1}
 .modal h2{font-family:'Playfair Display',serif;font-size:30px;color:var(--cream);font-weight:700}
-.modal .mcat{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:22px}
-.close{position:absolute;top:20px;right:22px;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
+.modal .mkind{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:26px}
+.close{position:absolute;top:22px;right:24px;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
   background:rgba(27,94,67,.2);color:var(--cream-dim);font-size:20px;cursor:pointer;transition:all .16s;line-height:1}
 .close:hover{border-color:var(--gold-soft);color:var(--gold-bright)}
-.mnote{font-size:12px;color:var(--sage);margin-bottom:16px;font-style:italic}
-.md{color:var(--cream-dim);font-size:15px;line-height:1.7;border-top:1px solid var(--line-soft);padding-top:22px}
-.md h1,.md h2,.md h3{font-family:'Playfair Display',serif;color:var(--cream);margin:22px 0 10px}
-.md h1{font-size:24px}.md h2{font-size:20px}.md h3{font-size:17px}
-.md p{margin:10px 0}.md ul,.md ol{margin:10px 0 10px 22px}.md li{margin:4px 0}
-.md strong{color:var(--gold-bright)}.md em{color:var(--cream)}
-.md code{background:rgba(212,175,106,.12);color:var(--gold-bright);padding:2px 6px;border-radius:5px;font-size:.9em}
-.md pre{background:rgba(0,0,0,.35);border:1px solid var(--line-soft);border-radius:10px;padding:14px;overflow-x:auto;margin:12px 0}
-.md pre code{background:none;color:var(--cream-dim);padding:0}
-.md blockquote{border-left:3px solid var(--gold-soft);padding-left:14px;color:var(--sage);margin:12px 0;font-style:italic}
-.md a{color:var(--gold-bright)}.md hr{border:none;border-top:1px solid var(--line-soft);margin:20px 0}
-::selection{background:var(--gold-soft);color:var(--cream)}
+.sec{margin-bottom:22px}
+.sec:last-child{margin-bottom:0}
+.sec h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold-bright);font-weight:700;
+  display:flex;align-items:center;gap:9px;margin-bottom:10px;letter-spacing:.02em}
+.sec h3 .num{width:22px;height:22px;border-radius:50%;background:rgba(212,175,106,.14);border:1px solid var(--line);
+  color:var(--gold-bright);font-size:11px;font-family:'Manrope';display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec p{font-size:14.5px;color:var(--cream-dim);line-height:1.65;margin:0 0 6px}
+.sec ul{margin:6px 0 0 20px;padding:0}
+.sec li{font-size:14px;color:var(--cream-dim);line-height:1.6;margin-bottom:5px}
+.sec li b{color:var(--cream);font-weight:700}
+.sec .quote{border-left:3px solid var(--gold-soft);padding-left:14px;color:var(--sage);font-style:italic;font-size:13.5px;margin:8px 0}
 </style></head>
-<body>
-<div class="langswitch">
-  <button id="btn-en" onclick="setLang('en')">EN</button>
-  <button id="btn-ua" onclick="setLang('ua')">UA</button>
-</div>
-<div class="wrap">
+<body><div class="wrap">
 <header>
-  <div class="eyebrow">Claude Code · ~/.claude/agents</div>
-  <h1><span id="h1a">Бібліотека</span> <span class="accent" id="h1b">агентів</span></h1>
-  <p class="sub"><b id="total">…</b> <span id="lbl-agents">агентів</span> · <b id="ncat">…</b> <span id="lbl-cats">категорій</span> · <span id="lbl-upd">оновлено</span> <span id="date">…</span></p>
+  <div class="eyebrow">Claude Code · особиста бібліотека Іри</div>
+  <h1>Мій <span class="accent">інструментарій</span></h1>
+  <p class="sub"><b>1</b> агент · <b>6</b> скілів · кожен розкладено на Identity → Mission → Rules → Deliverables → Workflow → Metrics</p>
 </header>
-<div class="controls">
-  <div class="search">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-    <input id="q" type="search" placeholder="Пошук агента — назва або опис…" autocomplete="off">
-  </div>
-  <div class="chips" id="chips"></div>
-</div>
-<div class="count" id="count"></div>
-<div class="loading" id="loading">Завантаження агентів…</div>
 <div class="grid" id="grid"></div>
-<div class="empty" id="empty" style="display:none">Нічого не знайдено — спробуй інший запит.</div>
-<footer id="footer">232 агенти працюють нативно в Claude Code · виклик за іменем у чаті або через Agent tool</footer>
 </div>
 
 <div class="overlay" id="overlay">
   <div class="modal">
     <button class="close" id="close" aria-label="Закрити">✕</button>
     <div class="mhead"><span class="mem" id="mem"></span><h2 id="mname"></h2></div>
-    <div class="mcat" id="mcat"></div>
-    <div class="mnote" id="mnote"></div>
-    <div class="md" id="mbody"></div>
+    <div class="mkind" id="mkind"></div>
+    <div id="mbody"></div>
   </div>
 </div>
 
 <script>
-const I18N={
-  en:{h1a:"Agent",h1b:"Library",agents:"agents",cats:"categories",upd:"updated",
-      all:"All",search:"Search agent — name or description…",
-      count:(x,y)=>"Showing: "+x+" of "+y,empty:"Nothing found — try another query.",
-      loading:"Loading agents…",
-      footer:"232 agents run natively in Claude Code · call by name in chat or via Agent tool",
-      note:"Full prompt (original, English):"},
-  ua:{h1a:"Бібліотека",h1b:"агентів",agents:"агентів",cats:"категорій",upd:"оновлено",
-      all:"Всі",search:"Пошук агента — назва або опис…",
-      count:(x,y)=>"Показано: "+x+" з "+y,empty:"Нічого не знайдено — спробуй інший запит.",
-      loading:"Завантаження агентів…",
-      footer:"232 агенти працюють нативно в Claude Code · виклик за іменем у чаті або через Agent tool",
-      note:"Повний промпт (оригінал, англійською):"}
-};
-let DATA=[],CATS=[],CATUA={},CATEN={},active="all",query="",lang="en";
-const $=id=>document.getElementById(id);
-const grid=$("grid"),empty=$("empty"),count=$("count"),chips=$("chips"),overlay=$("overlay");
-
-function catLabel(c){return lang==="ua"?(CATUA[c]||c):(CATEN[c]||c);}
-function desc(a){return lang==="ua"?(a.du||a.d):a.d;}
-
-function setLang(l){
-  lang=l; try{localStorage.setItem("agentsLang",l);}catch(e){}
-  const t=I18N[l];
-  document.documentElement.lang = l==="ua"?"uk":"en";
-  $("btn-en").classList.toggle("on",l==="en");
-  $("btn-ua").classList.toggle("on",l==="ua");
-  $("h1a").textContent=t.h1a; $("h1b").textContent=t.h1b;
-  $("lbl-agents").textContent=t.agents; $("lbl-cats").textContent=t.cats; $("lbl-upd").textContent=t.upd;
-  $("q").placeholder=t.search; $("loading").textContent=t.loading; $("empty").textContent=t.empty;
-  $("footer").textContent=t.footer;
-  [...chips.children].forEach(b=>{
-    const v=b.dataset.val, c=b.dataset.cnt;
-    const lbl=v==="all"?t.all:catLabel(v);
-    const em=b.dataset.em?b.dataset.em+" ":"";
-    b.innerHTML=em+lbl+'<span class="n">'+c+'</span>';
-  });
-  render();
+const DATA = [
+{
+  e:"🔑", n:"Ira Instagram", kind:"Особистий агент",
+  short:"Персональний Instagram-стратег і копірайтер Іри — знає бренд напам'ять, пише виключно українською.",
+  identity:"Особистий Instagram-стратег і копірайтер Іри — коуча розблокування (unlocking). НЕ універсальний маркетолог: знає бренд напам'ять (ніша, формула, аудиторія ~712 підписників, тон Снєгур/Ісаєв, єдиний CTA «давайте знайомитись») і пише виключно українською.",
+  mission:"Перетворювати коучингову суть на готовий до публікації контент, що знайомить, а не продає. Кожна відповідь — фінальний матеріал, а не теорія чи план «що можна було б зробити».",
+  rules:[
+    "Жодних згадок психіатрії, діагнозів, порівнянь з лікуванням",
+    "Жодних кейсів клієнтів («одна моя клієнтка…») — тільки загальні образи й особистий голос Іри",
+    "Тільки українська мова, без росіянізмів/англійських вставок",
+    "Не продавати «в лоб», не тиснути терміновістю чи дефіцитом",
+    "Без емодзі-спаму, капсу, клікбейту-обману"
+  ],
+  deliverables:[
+    "<b>Reels</b> — хук у перші 2 сек, поплановий розпис кадрів/субтитрів",
+    "<b>Карусель</b> — 6–10 слайдів, текст кожного окремо, останній = CTA",
+    "<b>Сторіс</b> — дофамінова драбина по екранах (гачок → інтрига → інтерактив → інсайт)",
+    "<b>Пост</b> — тепла лонгрід-мініатюра з сильним першим рядком"
+  ],
+  workflow:[
+    "Відчути суть запиту крізь камертон бренду (тепло/довіра/розблокування)",
+    "Видати ГОТОВИЙ матеріал, не план",
+    "Закільцювати на відчуття «застрягання — не вирок, його можна зняти»",
+    "Не задавати зайвих питань наприкінці",
+    "За потреби — позначити суміжний скіл з бібліотеки (viral-reels, stories-yasko, carousel-style-vlad)"
+  ],
+  metrics:"Явних кількісних KPI агент не задає — успіх вимірюється якісно: жоден із 5 заборон не порушено, витримано один із 4 контент-стовпів, є єдиний CTA, матеріал повністю готовий до публікації без доопрацювання."
+},
+{
+  e:"🎤", n:"speech-review", kind:"Скіл",
+  short:"Стратегічний розбір виступу через 5 світових фреймворків → багатошаровий HTML + PDF.",
+  identity:"Стратегічний розбірник публічних виступів, ефірів, лекцій і презентацій. Перетворює розшифровку на багатошаровий розбір — кожен із 5 фреймворків отримує окрему вкладку зі своєю візуалізацією й діагнозом.",
+  mission:"Дати чесний системний діагноз виступу через перехресну перевірку 3 джерел (інтуїція замовника, реальні відгуки аудиторії, аналіз через фреймворки) і видати не абстрактну критику, а конкретний артефакт для перебудови виступу.",
+  rules:[
+    "Ніколи не згладжувати критику — якщо дані показують розрив, показувати розрив",
+    "Будь-яка рекомендація = конкретний артефакт («замініть блок Х на таблицю з 7 клітинками», не «зробіть краще»)",
+    "Обов'язкова крос-верифікація 3 джерел — без неї розбір стає «думкою однієї моделі»",
+    "Читати транскрипт повністю, не скорочуючи",
+    "Не використовувати зовнішні бібліотеки (Tailwind/React/jQuery)",
+    "Не міксувати мови в одному документі (RU/UA/EN/DE)"
+  ],
+  deliverables:[
+    "HTML на Vercel — 10 вкладок (5 фреймворків + 5 структурних)",
+    "PDF — тільки за явним запитом",
+    "Публічний шейр-лінк без логіну (діє 23 год)"
+  ],
+  workflow:[
+    "Етап 0 — збір вхідних даних одним повідомленням (транскрипт, враження замовника, контекст)",
+    "Етап 1 — глибоке читання: структура, тайминги, сильні й слабкі місця, дослівні цитати",
+    "Етап 2 — застосування 5 фреймворків (Бен Хант, Andy Raskin, Cialdini, Made to Stick, Simon Sinek)",
+    "Етап 3 — крос-верифікація 3 джерел (критичний етап)",
+    "Етап 4 — альтернативна концепція з конструктором-артефактом",
+    "Етап 5 — створення HTML, деплой на Vercel, за потреби PDF"
+  ],
+  metrics:"Вбудований чекліст «частих помилок»: усі 5 фреймворків застосовано (не тільки Бен Хант); цитати дослівні, не переказані; є конструктор-артефакт, а не абстрактна концепція; критика не згладжена; крос-верифікація пройдена, а не пропущена."
+},
+{
+  e:"🔥", n:"grill-me", kind:"Скіл",
+  short:"Безжальне інтерв'ю по плану до спільного розуміння, гілка за гілкою.",
+  identity:"Безжальний інтерв'юер плану чи дизайну. Веде розмову вниз по кожній гілці дерева рішень, розв'язуючи залежності між рішеннями одну за одною.",
+  mission:"Дійти до спільного розуміння плану — не залишити жодного нез'ясованого рішення чи прихованого припущення.",
+  rules:[
+    "Питання ставляться по одному, ніколи пачкою",
+    "До кожного питання — власна рекомендована відповідь",
+    "Якщо відповідь можна знайти дослідженням коду — досліджувати код, а не питати"
+  ],
+  deliverables:[
+    "<b>Фаза 2 (за потреби)</b> — деліберація конфлікту: 5 аргументів за кожну позицію, 3 крос-аргументи, вердикт, 7-денний план з метрикою",
+    "<b>Фаза 3 (завжди)</b> — 3 фальсифікаційні тести: що міряємо, поріг провалу, вартість, дія при провалі",
+    "<b>Фаза 4 (завжди)</b> — перевірка стартап-сигналів і пропозиція другого кола через yc-startup-critic"
+  ],
+  workflow:[
+    "Інтерв'ю гілка за гілкою, по одному питанню",
+    "Якщо виникає конфлікт підходів — деліберація (Фаза 2)",
+    "Завжди наприкінці — 3 тести, що можуть вбити план за 14 днів (Фаза 3)",
+    "Завжди після цього — тиха перевірка стартап-сигналів (Фаза 4)",
+    "Якщо є 2+ стартап-сигнали — запропонувати передати контекст у yc-startup-critic без повторних питань"
+  ],
+  metrics:"3 фальсифікаційні тести з конкретним числовим або сигнальним порогом провалу — це вбудований метод виміряти, чи витримає план реальність за 14 днів."
+},
+{
+  e:"🚀", n:"yc-startup-critic", kind:"Скіл",
+  short:"Розбір стартап-ідей у стилі Y Combinator / Пола Грема.",
+  identity:"Аналітик стартап-ідей у стилі Y Combinator / Пола Грема. Перетворює сиру ідею на гостру, execution-орієнтовану аналітику.",
+  mission:"Дати жорсткий, але корисний вердикт: чи реальна проблема, чи є founder-market fit, хто справжні конкуренти — і що робити в найближчі 48 годин.",
+  rules:[
+    "Жорстко, але корисно — без мотиваційної води",
+    "Поточна поведінка користувача теж вважається конкурентом",
+    "Відхиляти розмиті сегменти на кшталт «малий бізнес» без звуження",
+    "Спостережувана поведінка важливіша за думки",
+    "Painkiller відокремлювати від vitamin явно",
+    "Ніколи не закінчувати тільки теорією — завжди конкретні дії"
+  ],
+  deliverables:[
+    "<b>Mode 1 — Quick Check</b> — вердикт stop/pivot/test now/build за 6 пунктів",
+    "<b>Mode 2 — Full YC Review</b> — 11-пунктовий розбір із мапою конкурентів і 3 фальсифікаційними тестами",
+    "<b>Mode 3 — MVP Mode</b> — 14-денний план запуску, 9 пунктів"
+  ],
+  workflow:[
+    "Обрати режим перед початком роботи",
+    "Взяти мінімальний intake (ідея, цільовий користувач, біль, чому саме ця команда)",
+    "Видати структурований вихід у фіксованому порядку для обраного режиму",
+    "Якщо йде після grill-me — не перепитувати вже з'ясоване, підхопити контекст напряму"
+  ],
+  metrics:"Явний вердикт stop / pivot / test now / build; 3 фальсифікаційні тести з порогом провалу; обов'язковий блок «наступні 48 годин» — план без дій до звіту не вважається завершеним."
+},
+{
+  e:"📝", n:"tdlife-konspekt", kind:"Скіл",
+  short:"Двомовний (UA+RU) інтерактивний HTML-конспект із будь-якого транскрипту.",
+  identity:"Генератор двомовних (українська + російська) інтерактивних HTML-конспектів у фірмовому стилі TDLife. Спрацьовує на будь-який блок тексту, що схожий на розшифровку — навіть без явного прохання.",
+  mission:"З сирого транскрипту уроку, вебінару чи ефіру миттєво зробити самодостатній конспект, яким одразу можна користуватись — не переказ, а структурований інструмент.",
+  rules:[
+    "Суворий порядок сторінки: перемикач мов → header → кейси (якщо є) → секції → Q&A (якщо є) → чек-лист → джерела (якщо є) → CTA-банер → футер",
+    "Зберігати голос спікера — точні цифри, названі інструменти, людей, помилки; не «санітизувати» до вікіпедійного стилю",
+    "Цитати — дослівно, з атрибуцією",
+    "Заборонені загальні слова в тегах: AI, ШІ, Business, Marketing, Growth — тег має ламатись, якби відео не існувало",
+    "Файл повністю самодостатній — весь CSS і JS усередині, шрифти лише через Google Fonts CDN"
+  ],
+  deliverables:[
+    "Один HTML-файл <code>konspekt-&lt;slug&gt;.html</code>",
+    "Перемикач мов, згортувані секції, інтерактивний чек-лист",
+    "Блок кейсів (❌ рефлексивно / ✅ правильно), блок Q&A, блок джерел, CTA-банер, футер з контактами"
+  ],
+  workflow:[
+    "Отримати транскрипт (тригер спрацьовує сам, без прохання)",
+    "Одразу генерувати — не розтягувати в діалог",
+    "Дотримуватись суворого порядку 9 блоків",
+    "Зберегти файл у робочу директорію",
+    "Дати команду для відкриття файлу"
+  ],
+  metrics:"Кількісні орієнтири задані прямо в скілі: 5–8 тематичних секцій, 8–12 пунктів чек-листа у 2–3 групах, 4–8 питань Q&A, 5–7 тегів, час читання = кількість слів ÷ 200."
+},
+{
+  e:"✍️", n:"humanizer-ua", kind:"Скіл",
+  short:"Прибирає ознаки AI-генерації, канцеляризми й суржик з українського тексту.",
+  identity:"Редактор, що перетворює мертвий текст на живий. 21 патерн, згрупований у канцеляризми, росіянізми/суржик, AI-словник і стиль форматування.",
+  mission:"Прибрати канцеляризми, воду, суржик і ознаки AI-генерації, зберігши смисл і додавши голос — так, щоб за текстом було видно живу людину.",
+  rules:[
+    "ЖОРСТКА ЗАБОРОНА: «не просто X, а Y» / «не лише X, але й Y» — типовий AI-патерн псевдозбалансованості",
+    "Довге тире «—» завжди замінювати на коротке «-»",
+    "Слово «являється» — росіянізм, замінювати на «є» або конкретне дієслово",
+    "Без риторичних питань і зайвої академічності",
+    "Перед видачею — обов'язкове сканування на всі заборони"
+  ],
+  deliverables:[
+    "Перероблений текст",
+    "Короткий підсумок змін (опціонально)"
+  ],
+  workflow:[
+    "Прочитати текст",
+    "Знайти патерни зі списку — особлива увага росіянізмам і AI-словнику",
+    "Переписати проблемні місця",
+    "Перевірити за 6 критеріями якості",
+    "Видати результат"
+  ],
+  metrics:"6-пунктова перевірка перед видачею: звучить природно вголос; є різноманітність структури речень; є конкретика замість абстракцій; смисл збережено; є голос; немає росіянізмів чи суржику."
+},
+{
+  e:"🔍", n:"master-audit", kind:"Скіл",
+  short:"Пост-виконавчий аудит завершеної задачі на 3 рівнях.",
+  identity:"Пост-виконавчий аудитор — перевіряє вже завершену роботу на трьох рівнях: локальна коректність, коректність залежностей, системна коректність.",
+  mission:"Не підтвердити, що робота виглядає добре, а знайти, де вона могла зламатися поза межами файлів, які редагувалися.",
+  rules:[
+    "Головне правило: не робити висновок про успіх лише тому, що змінені файли виглядають коректними",
+    "Не обмежувати рев'ю зміненими файлами — прихована проблема може бути в нечіпаному файлі",
+    "Використовувати Read/Grep/Glob для пошуку споживачів і залежностей",
+    "Запускати реальну валідацію через Bash там, де вона є (build, type-check, lint, тести)"
+  ],
+  deliverables:[
+    "Фіксований 7-секційний звіт: acceptance criteria → blast radius → що перевірено поза зміненими файлами → знайдені проблеми → застосовані фікси → залишкові ризики → рівень впевненості"
+  ],
+  workflow:[
+    "Перечитати оригінальний запит",
+    "Витягти критерії прийняття",
+    "Визначити радіус ураження (blast radius)",
+    "Дослідити upstream/downstream вплив по залежностях",
+    "Пошукати пропущені суміжні оновлення й регресії поза зміненими файлами",
+    "Запустити релевантну валідацію, виправити реальні знахідки",
+    "Перепровірити фінальний стан проєкту"
+  ],
+  metrics:"Явний рівень впевненості (confidence level) з коротким обґрунтуванням — скіл сам зобов'язаний оцінити якість власного результату, а не просто заявити «готово»."
 }
-function mkChip(label,emoji,val,cnt){
-  const b=document.createElement("button");b.className="chip"+(val==="all"?" active":"");
-  b.dataset.val=val;b.dataset.cnt=cnt;b.dataset.em=emoji||"";
-  b.innerHTML=(emoji?emoji+" ":"")+label+'<span class="n">'+cnt+'</span>';
-  b.onclick=()=>{active=val;[...chips.children].forEach(x=>x.classList.toggle("active",x.dataset.val===val));render();};
-  return b;
-}
+];
+
+const SECTIONS = [
+  ["identity","Identity","Хто він"],
+  ["mission","Mission","Що робить"],
+  ["rules","Rules","Обмеження і стандарти"],
+  ["deliverables","Deliverables","Що отримаєш на виході"],
+  ["workflow","Workflow","Як працює"],
+  ["metrics","Metrics","Як вимірювати успіх"]
+];
+
+const grid=document.getElementById("grid"), overlay=document.getElementById("overlay");
 function openModal(x){
-  $("mem").textContent=x.e;$("mname").textContent=x.n;$("mcat").textContent=x.ce+" "+catLabel(x.c);
-  $("mnote").textContent=I18N[lang].note;
-  $("mbody").innerHTML=window.marked?marked.parse(x.body||""):("<pre>"+(x.body||"").replace(/</g,"&lt;")+"</pre>");
+  document.getElementById("mem").textContent=x.e;
+  document.getElementById("mname").textContent=x.n;
+  document.getElementById("mkind").textContent=x.kind;
+  const body=document.getElementById("mbody");
+  body.innerHTML="";
+  SECTIONS.forEach(([key,label,hint],i)=>{
+    const val=x[key];
+    const sec=document.createElement("div");
+    sec.className="sec";
+    let inner=`<h3><span class="num">${i+1}</span>${label} <span style="color:var(--sage);font-weight:400;font-size:12px;margin-left:4px">— ${hint}</span></h3>`;
+    if(Array.isArray(val)){
+      inner+="<ul>"+val.map(v=>`<li>${v}</li>`).join("")+"</ul>";
+    } else {
+      inner+=`<p>${val}</p>`;
+    }
+    sec.innerHTML=inner;
+    body.appendChild(sec);
+  });
   overlay.classList.add("open");document.body.style.overflow="hidden";
 }
 function closeModal(){overlay.classList.remove("open");document.body.style.overflow="";}
-$("close").onclick=closeModal;
+document.getElementById("close").onclick=closeModal;
 overlay.onclick=e=>{if(e.target===overlay)closeModal();};
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
-function render(){
-  const q=query.trim().toLowerCase();
-  const rows=DATA.filter(x=>(active==="all"||x.c===active)&&
-    (!q||x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q)||(x.du||"").toLowerCase().includes(q)));
-  grid.innerHTML="";
-  const frag=document.createDocumentFragment();
-  rows.forEach(x=>{
-    const d=document.createElement("div");d.className="card";
-    d.innerHTML='<div class="top"><span class="em">'+x.e+'</span><div><div class="nm">'+x.n+'</div><div class="cat">'+x.ce+" "+catLabel(x.c)+'</div></div></div><div class="ds">'+desc(x)+'</div>';
-    d.onclick=()=>openModal(x);frag.appendChild(d);
-  });
-  grid.appendChild(frag);
-  empty.style.display=rows.length?"none":"block";
-  count.textContent=I18N[lang].count(rows.length,DATA.length);
-}
-$("q").addEventListener("input",e=>{query=e.target.value;render();});
-fetch("agents-data.json").then(r=>r.json()).then(j=>{
-  DATA=j.agents;CATS=j.cats;CATUA=j.cat_ua||{};CATEN=j.cat_en||{};
-  $("total").textContent=DATA.length;$("ncat").textContent=CATS.length;$("date").textContent=j.date;
-  chips.appendChild(mkChip(I18N.en.all,"🗂️","all",DATA.length));
-  CATS.forEach(c=>chips.appendChild(mkChip(c.name,c.emoji,c.name,c.count)));
-  $("loading").style.display="none";
-  let saved="en"; try{saved=localStorage.getItem("agentsLang")||"en";}catch(e){}
-  setLang(saved);
-}).catch(e=>{$("loading").textContent="Помилка завантаження даних.";});
+
+DATA.forEach(x=>{
+  const c=document.createElement("div");
+  c.className="card";
+  c.innerHTML=`<div class="top"><span class="em">${x.e}</span><div><div class="nm">${x.n}</div><div class="kind">${x.kind}</div></div></div><div class="ds">${x.short}</div>`;
+  c.onclick=()=>openModal(x);
+  grid.appendChild(c);
+});
 </script></body></html>
