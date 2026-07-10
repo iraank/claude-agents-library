@@ -41,6 +41,18 @@ h1 .accent{color:var(--gold-bright);font-style:italic}
 .card .kind{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);opacity:.85}
 .card .author{font-size:12px;color:var(--sage);margin-top:2px}
 .card .ds{font-size:13.5px;color:var(--cream-dim);line-height:1.55}
+.section-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold-bright);
+  margin:52px 0 18px;padding-bottom:10px;border-bottom:1px solid var(--line-soft)}
+.grid + .section-title{margin-top:52px}
+.pcard{background:linear-gradient(160deg,rgba(15,61,46,.28),rgba(12,26,19,.5));border:1px solid var(--line);
+  border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:6px;text-decoration:none;
+  transition:transform .16s,border-color .16s,box-shadow .16s}
+.pcard:hover{transform:translateY(-3px);border-color:var(--gold-soft);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.pcard .pnm{font-family:'Playfair Display',serif;font-size:16.5px;font-weight:700;color:var(--cream);
+  display:flex;align-items:center;gap:8px}
+.pcard .pnm i{font-style:normal;font-size:16px}
+.pcard .pds{font-size:13px;color:var(--cream-dim);line-height:1.5}
+.pcard .purl{font-size:11.5px;color:var(--sage);word-break:break-all}
 footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;letter-spacing:.05em}
 /* modal */
 .overlay{position:fixed;inset:0;background:rgba(5,10,8,.75);backdrop-filter:blur(6px);
@@ -72,9 +84,14 @@ footer{text-align:center;margin-top:56px;color:var(--sage);font-size:12.5px;lett
 <header>
   <div class="eyebrow">Claude Code · особиста бібліотека Іри</div>
   <h1>Мій <span class="accent">інструментарій</span></h1>
-  <p class="sub"><b>1</b> агент · <b>6</b> скілів · кожен розкладено на Identity → Mission → Rules → Deliverables → Workflow → Metrics</p>
+  <p class="sub"><b>9</b> інструментів · кожен розкладено на Identity → Mission → Rules → Deliverables → Workflow → Metrics</p>
 </header>
+
+<h2 class="section-title">Частина 1 — скіли й агенти, якими я працюю</h2>
 <div class="grid" id="grid"></div>
+
+<h2 class="section-title">Частина 2 — мої продукти</h2>
+<div class="grid" id="products"></div>
 </div>
 
 <div class="overlay" id="overlay">
@@ -269,6 +286,59 @@ const DATA = [
     "Перепровірити фінальний стан проєкту"
   ],
   metrics:"Явний рівень впевненості (confidence level) з коротким обґрунтуванням — скіл сам зобов'язаний оцінити якість власного результату, а не просто заявити «готово»."
+},
+{
+  e:"💼", n:"Personal Brand Agent", kind:"Система", author:"Костянтин Карпушин",
+  short:"Мультиагентна AI-система для автономного створення й оптимізації контенту в LinkedIn.",
+  identity:"Мультиагентна AI-система для автономного створення й оптимізації контенту в LinkedIn. 7 спеціалізованих агентів (Trend Scout, Analyzer, Writer, Humanizer, Visual Creator, Photo Selector, QC), оркестрація через LangGraph.",
+  mission:"Автономно пройти весь цикл контенту — сканувати тренди, аналізувати, писати, оцінювати й публікувати пости в LinkedIn, самовдосконалюючись у процесі (meta-agent пише й гарячою заміною підвантажує власний код під час виконання).",
+  rules:[
+    "Fail-fast — без фолбеків і тихих провалів; ретрай з експоненційним бекофом, потім передача в error handler",
+    "Публікація лише при QC-оцінці ≥ 9.0, інакше — узгодження людиною",
+    "4 рівні автономності — від повного схвалення людиною до повністю автономної публікації",
+    "Author Voice Profiling — вчиться авторського стилю з наявних постів для консистентного тону"
+  ],
+  deliverables:[
+    "Готові пости LinkedIn з візуалом (Nano Banana Pro)",
+    "Аналітика поста в 4 часових точках (T+15хв / T+30хв / T+1год / T+24год)",
+    "Профіль авторського голосу, що навчається на існуючих постах"
+  ],
+  workflow:[
+    "SCOUT — сканування трендів",
+    "ANALYZE — аналіз знайденого",
+    "CREATE — Writer + Visual Creator генерують пост",
+    "EVAL — Meta Agent оцінює; скор нижче порогу → REWRITE (до 3 ітерацій)",
+    "QC — фінальна перевірка якості",
+    "Публікація автоматично або через людське схвалення, залежно від скору",
+    "Збір аналітики → Self-Improvement Engine допрацьовує систему"
+  ],
+  metrics:"Поріг публікації: QC score ≥ 9.0 → авто-публікація, нижче → людське схвалення. На етапі EVAL скор < 8 запускає автоматичний цикл REWRITE (до 3 разів). Аналітика збирається в 4 фіксованих часових точках після публікації."
+},
+{
+  e:"🎓", n:"University", kind:"Шаблон бази знань", author:"Костянтин Карпушин",
+  short:"Переносимий Zettelkasten-шаблон бази знань для проєктів у зв'язці з Claude Code.",
+  identity:"Переносимий Zettelkasten-шаблон бази знань для проєктів, що працюють у зв'язці з Claude Code. Це НЕ скрипти — конвенція й шаблони; сам пайплайн виконує Claude, прочитавши METHODOLOGY.md.",
+  mission:"Перетворити потік посилань і джерел на структуровану, перехресно пов'язану базу знань: користувач кидає посилання → Claude обробляє в 10 кроків → результат лягає у структуровані теки з перехресними зв'язками.",
+  rules:[
+    "Сувора методологія (METHODOLOGY.md) — правила in-scope / out-of-scope захищають від розповзання теми",
+    "Кожна ідея = один файл нотатки (атомарність)",
+    "Кожне твердження (claim) має підкріплюватись доказом (evidence)",
+    "Конфлікти між джерелами фіксуються явно (contradictions/), а не приховуються"
+  ],
+  deliverables:[
+    "<code>sources/</code> — першоджерела з конспектами",
+    "<code>notes/</code> — атомарні нотатки (одна ідея = один файл)",
+    "<code>claims/</code> — перевірювані твердження з доказами",
+    "<code>syntheses/</code> — зведені документи, <code>contradictions/</code> — зафіксовані конфлікти, <code>verdicts/</code> — підсумкові рішення",
+    "<code>graph/edges.jsonl</code> — машинозчитуваний граф зв'язків"
+  ],
+  workflow:[
+    "<code>bootstrap.sh</code> ініціалізує <code>university/</code> у новому проєкті",
+    "Інтерактивне інтерв'ю з 6 питань: місія проєкту, seed-документи, in-scope/out-of-scope теми, таксономія, шляхи коду",
+    "Скрипт заповнює плейсхолдери й підтверджує підсумок (Y/n)",
+    "У наступних сесіях Claude автоматично направляє всі нові посилання через університет"
+  ],
+  metrics:"Явних числових метрик немає — якість вимірюється структурною повнотою: кожна ідея оформлена окремим файлом, кожне твердження має evidence, конфлікти зафіксовані, а не замовчені."
 }
 ];
 
@@ -315,5 +385,25 @@ DATA.forEach(x=>{
   c.innerHTML=`<div class="top"><span class="em">${x.e}</span><div><div class="nm">${x.n}</div><div class="kind">${x.kind}</div><div class="author">${x.author}</div></div></div><div class="ds">${x.short}</div>`;
   c.onclick=()=>openModal(x);
   grid.appendChild(c);
+});
+
+const PRODUCTS = [
+  { e:"🎯", n:"AI-Коуч Unlocking", ds:"Репозиторій AI-коуча як воронки в живий коучинг", url:"https://github.com/iraank/ai-coach-unlocking" },
+  { e:"🧭", n:"Квіз Unlocking", ds:"Квіз-воронка «Діагностика ясності»", url:"https://quiz-unlocking.vercel.app/" },
+  { e:"🌐", n:"Лендинг v2", ds:"Другий варіант лендингу", url:"https://landing-version2-ira-ank-s-projects.vercel.app/" },
+  { e:"⛵", n:"AI-Ковчег — Recap", ds:"Рекап проєкту AI-Ковчег", url:"https://ai-kovcheg-recap.vercel.app/" },
+  { e:"🎙️", n:"Unlocking Session", ds:"Сторінка коуч-сесії", url:"https://unlocking-session.vercel.app/" },
+  { e:"📋", n:"Deploy Brief", ds:"Бриф для деплою", url:"https://deploy-brief-ira-ank-s-projects.vercel.app/" },
+  { e:"🗺️", n:"Skills Navigator", ds:"Навігатор по скілах", url:"https://skills-navigator-five.vercel.app/" },
+  { e:"📄", n:"Робочий документ", ds:"Google Docs", url:"https://docs.google.com/document/d/1HTii9U8stz2Tcvcjo1-gr67m5CTL-wo77zBDlvnDh9Q/edit" },
+  { e:"🤖", n:"Артефакт Claude.ai", ds:"Робочий артефакт", url:"https://claude.ai/code/artifact/aa52afc7-0316-464f-bffc-f2b83aae89dd" }
+];
+const productsGrid=document.getElementById("products");
+PRODUCTS.forEach(p=>{
+  const a=document.createElement("a");
+  a.className="pcard";
+  a.href=p.url; a.target="_blank"; a.rel="noopener noreferrer";
+  a.innerHTML=`<div class="pnm"><i>${p.e}</i>${p.n}</div><div class="pds">${p.ds}</div><div class="purl">${p.url}</div>`;
+  productsGrid.appendChild(a);
 });
 </script></body></html>
